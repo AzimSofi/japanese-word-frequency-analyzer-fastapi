@@ -55,6 +55,23 @@ def analyze_text(data: TextData):
     # Return JSON 
     return {"frequencies": word_freq}
 
+class TokenizeTextData(BaseModel):
+    content: str
+
+@app.post("/tokenize")
+def tokenize_text(data: TokenizeTextData):
+    text_content = data.content
+
+    node = mecab.parseToNode(text_content)
+    separated_words = []
+
+    while node:
+        word = node.surface
+        if word:  # Avoid empty nodes
+            separated_words.append(word)
+        node = node.next
+
+    return {"words": separated_words}
 
 # uvicorn main:app --reload --port 5000
 # http://127.0.0.1:5000/docs
